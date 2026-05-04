@@ -1,24 +1,51 @@
 # Telegram 多账号自动签到工具
 
-基于 `Telethon` 的 Telegram 多账号自动签到/任务执行工具，支持 GitHub Actions 定时运行。
+基于 `Telethon` 的 Telegram 多账号自动签到工具，支持多账号配置和 GitHub Actions 定时执行。
 
 ## 功能特性
 
-- 支持多账号独立配置（每个账号有不同的 `api_id`、`api_hash`、`session`）
+- 支持多账号独立配置（每个账号有独立的 `api_id`、`api_hash`、`session`）
 - 单个账号可向多个 Bot 发送不同消息
 - 自动标记 bot 回复为已读
-- 支持 GitHub Actions 定时执行
-- 本地配置文件 + 环境变量双模式
+- 每天北京时间 00:05 自动执行
 
-## 配置文件格式
+---
 
-复制 `config.yaml.example` 为 `config.yaml`：
+## 准备工作
+
+### 1. 申请 Telegram API credentials
+
+1. 访问 https://my.telegram.org
+2. 登录后点击 "API development tools"
+3. 创建一个应用，获取 `api_id` 和 `api_hash`
+
+### 2. 生成 StringSession
+
+StringSession 是账号的登录凭证，用于无需密码即可登录。
+
+```bash
+uv run python generate_session.py
+```
+
+按提示输入 `api_id`、`api_hash`、手机号和验证码。
+
+---
+
+## 配置文件
+
+复制示例配置文件：
+
+```bash
+cp config.yaml.example config.yaml
+```
+
+编辑 `config.yaml`：
 
 ```yaml
 accounts:
   - api_id: 12345
     api_hash: "your_api_hash"
-    session: "YOUR_STRING_SESSION_1"
+    session: "YOUR_STRING_SESSION"
     tasks:
       - bot: "@bot_username"
         message: "/start"
@@ -27,50 +54,49 @@ accounts:
 
   - api_id: 67890
     api_hash: "another_api_hash"
-    session: "YOUR_STRING_SESSION_2"
+    session: "ANOTHER_STRING_SESSION"
     tasks:
       - bot: "@third_bot"
         message: "/daily"
 ```
 
-## 获取 StringSession
+### 配置说明
 
-运行以下命令生成 StringSession：
+| 字段 | 说明 |
+|-----|------|
+| `api_id` | Telegram API ID |
+| `api_hash` | Telegram API Hash |
+| `session` | StringSession 字符串 |
+| `tasks` | 该账号要执行的任务列表 |
+| `bot` | 目标 Bot 的用户名（@后面的部分）或用户ID |
+| `message` | 要发送的消息 |
+
+---
+
+## 运行
+
+### 本地运行
 
 ```bash
-uv run python generate_session.py
-```
-
-按提示输入 `api_id`、`api_hash`、手机号和验证码。
-
-## 本地运行
-
-```bash
-# 设置环境变量
-export API_ID=your_api_id
-export API_HASH=your_api_hash
-
-# 或直接在 config.yaml 中配置
-
-# 运行
 uv run python main.py
 ```
 
-## GitHub Actions 部署
+### GitHub Actions
 
-### 1. 添加 Secrets
+#### 1. 添加 Secrets
 
-在 GitHub 仓库 Settings → Secrets and variables → Actions 中添加：
+在仓库 Settings → Secrets and variables → Actions 中添加：
 
 | Secret 名称 | 说明 |
 |------------|------|
-| `TG_CONFIG` | 完整的配置文件内容（YAML 格式） |
+| `TG_CONFIG` | 完整的 `config.yaml` 内容 |
 
-### 2. 定时执行
+#### 2. 触发方式
 
-工作流已配置为每天 UTC 16:05（北京时间 00:05）自动运行。
+- **定时任务**：每天 UTC 16:05（北京时间 00:05）自动运行
+- **手动触发**：点击 Actions → Telegram Auto Check-in → Run workflow
 
-也可手动触发：在 GitHub 仓库页面点击 Actions → Telegram Auto Check-in → Run workflow
+---
 
 ## 目录结构
 
