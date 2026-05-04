@@ -38,7 +38,7 @@ def load_config() -> dict[str, Any]:
     sys.exit(1)
 
 
-async def run_account(account: dict) -> None:
+async def run_account(account: dict, account_idx: int) -> None:
     """执行单个账号的任务"""
     api_id = account.get("api_id")
     api_hash = account.get("api_hash")
@@ -54,16 +54,16 @@ async def run_account(account: dict) -> None:
 
     async with TelegramClient(StringSession(session), int(api_id), api_hash) as client:
         me = await client.get_me()
-        logger.info(f"登录账号: {me.first_name} (ID: {me.id})")
+        logger.info(f"登录账号: 账号{account_idx}")
 
-        for task in tasks:
+        for idx, task in enumerate(tasks):
             bot = task.get("bot", "")
             message = task.get("message", "")
             if not bot or not message:
                 continue
             try:
                 await client.send_message(bot, message)
-                logger.info(f"  -> 发送给 {bot}: {message[:30]}...")
+                logger.info(f"  -> 账号{account_idx} 发送第 {idx+1} 条消息")
 
                 # 等待 bot 回复
                 await asyncio.sleep(3)
@@ -74,9 +74,9 @@ async def run_account(account: dict) -> None:
                 if messages:
                     # 使用 bot 返回的最新消息ID 标记已读
                     await client.send_read_acknowledge(bot, max_id=messages[0].id)
-                    logger.info(f"  -> 已标记消息已读 (max_id={messages[0].id})")
+                    logger.info(f"  -> 已标记消息已读")
             except Exception as e:
-                logger.error(f"  -> 发送给 {bot} 失败: {e}")
+                logger.error(f"  -> 账号{account_idx} 发送第 {idx+1} 条消息失败: {e}")
 
 
 async def main() -> None:
@@ -89,7 +89,7 @@ async def main() -> None:
 
     for i, account in enumerate(accounts):
         logger.info(f"开始处理账号 {i + 1}/{len(accounts)}...")
-        await run_account(account)
+        await run_account(account, i + 1)
 
     logger.info("所有账号任务执行完成")
 
