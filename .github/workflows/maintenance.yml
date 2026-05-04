@@ -1,0 +1,24 @@
+name: Scheduled Maintenance
+
+on:
+  schedule:
+    - cron: '0 0 */28 * *'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  maintenance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable all workflows
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          workflows=$(gh api repos/${{ github.repository }}/actions/workflows --jq '.workflows[].id')
+          for id in $workflows; do
+            gh api -X PUT "repos/${{ github.repository }}/actions/workflows/${id}/enable" --silent
+          done
