@@ -2,8 +2,8 @@ name: Telegram Auto Check-in
 
 on:
   schedule:
-    # 每天 UTC 00:05 运行 (北京时间 08:05)
-    - cron: "5 0 * * *"
+    # 每天 UTC 16:05 运行 (北京时间 00:05)
+    - cron: "5 16 * * *"
   workflow_dispatch:  # 允许手动触发
 
 jobs:
