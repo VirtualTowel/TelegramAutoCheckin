@@ -2,8 +2,6 @@
 生成 Telethon StringSession 的工具
 运行: uv run python generate_session.py
 """
-import sys
-sys.stdout.reconfigure(line_buffering=True)  # 改为行缓冲，及时输出
 import asyncio
 
 from telethon import TelegramClient
