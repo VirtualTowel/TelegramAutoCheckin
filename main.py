@@ -64,6 +64,17 @@ async def run_account(account: dict) -> None:
             try:
                 await client.send_message(bot, message)
                 logger.info(f"  -> 发送给 {bot}: {message[:30]}...")
+
+                # 等待 bot 回复
+                await asyncio.sleep(3)
+
+                # 获取与该 bot 的对话中的最新消息ID
+                entity = await client.get_entity(bot)
+                messages = await client.get_messages(entity, limit=1)
+                if messages:
+                    # 使用 bot 返回的最新消息ID 标记已读
+                    await client.send_read_acknowledge(bot, max_id=messages[0].id)
+                    logger.info(f"  -> 已标记消息已读 (max_id={messages[0].id})")
             except Exception as e:
                 logger.error(f"  -> 发送给 {bot} 失败: {e}")
 
