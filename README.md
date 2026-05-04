@@ -93,7 +93,7 @@ uv run python main.py
 
 #### 2. 触发方式
 
-- **定时任务**：每天 UTC 16:05（北京时间 00:05）自动运行
+- **定时任务**：每天自动运行，由于 GitHub Actions 的队列延迟，真实运行时间不可预测
 - **手动触发**：点击 Actions → Telegram Auto Check-in → Run workflow
 
 ---
