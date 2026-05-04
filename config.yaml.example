@@ -1,0 +1,21 @@
+# Telegram 自动签到配置文件
+# 复制此文件为 config.yaml 并填入你的配置
+
+accounts:
+  # 账号1
+  - api_id: 12345                    # Telegram API ID
+    api_hash: "your_api_hash_here"   # Telegram API Hash
+    session: "YOUR_STRING_SESSION_1" # Telethon StringSession
+    tasks:
+      - bot: "@target_bot_username"  # 目标Bot用户名（@后面的部分）或用户ID
+        message: "/start"            # 要发送的消息
+      - bot: "@another_bot"          # 同一账号发送给另一个Bot
+        message: "/checkin 100"      # 可以是不同消息
+
+  # 账号2（如果有更多账号，类似的添加即可）
+  # - api_id: 67890
+  #   api_hash: "another_api_hash"
+  #   session: "YOUR_STRING_SESSION_2"
+  #   tasks:
+  #     - bot: "123456789"  # 也可以使用用户ID
+  #       message: "/checkin"
